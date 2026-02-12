@@ -1,16 +1,35 @@
+# Python
 venv/
-.env
+.venv/
 __pycache__/
 *.py[cod]
+*.pyo
 *.so
 .Python
 *.egg-info/
 .eggs/
-dist/
-build/
-node_modules/
+*.egg
+
+# Django
+.env
+.env.local
 *.log
 db.sqlite3
-.DS_Store
 *.sqlite3
 staticfiles/
+media/
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/node_modules/
+
+# Build / IDE
+dist/
+build/
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

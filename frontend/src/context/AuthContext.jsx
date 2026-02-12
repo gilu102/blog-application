@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { auth as authApi } from "../api/endpoints";
+import { auth as authApi, me as meApi } from "../api/endpoints";
 
 const AuthContext = createContext(null);
 
@@ -7,11 +7,20 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUser = async () => {
+    try {
+      const { data } = await meApi();
+      setUser({ id: data.id, username: data.username, groups: data.groups || [], is_staff: data.is_staff });
+    } catch (_e) {
+      setUser(null);
+    }
+  };
+
   const login = async (username, password) => {
     const { data } = await authApi.login(username, password);
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
-    setUser({ username });
+    await fetchUser();
   };
 
   const logout = () => {
@@ -27,17 +36,16 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const access = localStorage.getItem("access");
-    if (access) {
-      try {
-        const payload = JSON.parse(atob(access.split(".")[1]));
-        setUser({ username: payload.username || "" });
-      } catch (_e) {}
-    }
-    setLoading(false);
+    if (access) fetchUser().finally(() => setLoading(false));
+    else setLoading(false);
   }, []);
 
+  const isAdmin = user?.groups?.includes("Admin") || user?.is_staff;
+  const isCreator = user?.groups?.includes("Editors") || isAdmin;
+  const canEditArticle = (article) => isAdmin || (isCreator && article?.author_username === user?.username);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, isAdmin, isCreator, canEditArticle }}>
       {children}
     </AuthContext.Provider>
   );

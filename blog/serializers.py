@@ -22,19 +22,27 @@ class TagSerializer(serializers.ModelSerializer):
 
 class ArticleListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
+    author_username = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
-        fields = ["id", "title", "content", "publication_date", "author_name", "tags"]
+        fields = ["id", "title", "content", "publication_date", "author_name", "author_username", "tags"]
+
+    def get_author_username(self, obj):
+        return obj.author.username if obj.author else None
 
 class ArticleDetailSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
+    author_username = serializers.SerializerMethodField()
     tag_ids = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all(), write_only=True, required=False)
 
     class Meta:
         model = Article
-        fields = ["id", "title", "content", "publication_date", "author_name", "author", "tags", "tag_ids"]
+        fields = ["id", "title", "content", "publication_date", "author_name", "author", "author_username", "tags", "tag_ids"]
         read_only_fields = ["publication_date", "author"]
+
+    def get_author_username(self, obj):
+        return obj.author.username if obj.author else None
 
     def create(self, validated_data):
         tag_ids = validated_data.pop("tag_ids", [])

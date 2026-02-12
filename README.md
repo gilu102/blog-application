@@ -1,6 +1,8 @@
-# Django Blog – Capstone Project
+# Gil's Blog
 
-Blog with **Django REST API** and **React** frontend. Admins create, edit, and delete articles; registered users view articles and write comments. API documentation: DRF Browsable API at `/api/`.
+בלוג עם **Django REST API** ופרונט **React** — מאמרים, תגובות, צ'אט, אודות, איפוס סיסמה ואימות משתמשים.
+
+**Features:** Articles & tags, comments, ratings, global chat (Gil's Lounge), light/dark mode, About Me + CV download, File System Tracking (password reset + human verification), role-based CRUD (Admin / Creator / User).
 
 ## Tech stack
 
@@ -26,11 +28,13 @@ Create a `.env` file (see `.env.example`): `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS
 3. In `.env` set `USE_SQLITE=False`, and set `DB_PASSWORD` to the postgres password. Use `DB_USER=postgres`, `DB_NAME=blog_db`, `DB_HOST=localhost`, `DB_PORT=5432` unless you changed them.
 
 ```bash
-python manage.py migrate
+python manage.py migrate   # includes SystemTrackingLog for password reset & human verification
 python manage.py setup_groups
 python manage.py seed_data
 python manage.py runserver
 ```
+
+**CV download:** Place your resume as `frontend/public/cv/Gil_CV.docx` so the About page "Download CV" link works (e.g. copy `קורות חיים גיל.docx` there and rename to `Gil_CV.docx`).
 
 API: `http://127.0.0.1:8000/api/`
 
@@ -51,16 +55,24 @@ Frontend: `http://localhost:3000` (proxies `/api` to backend). Start the backend
 | POST | `/api/register/` | Register |
 | POST | `/api/token/` | JWT login |
 | POST | `/api/token/refresh/` | Refresh token |
+| GET | `/api/me/` | Current user (id, username, groups) — authenticated |
+| GET | `/api/tags/` | List tags |
 | GET | `/api/articles/` | List articles, optional `?search=` |
 | GET | `/api/articles/<id>/` | One article |
-| POST | `/api/articles/` | Create article (Admin) |
-| PUT/PATCH | `/api/articles/<id>/` | Update article (Admin) |
-| DELETE | `/api/articles/<id>/` | Delete article (Admin) |
+| POST | `/api/articles/` | Create article (Admin / Creator) |
+| PATCH | `/api/articles/<id>/` | Update article (Admin or owner Creator) |
+| DELETE | `/api/articles/<id>/` | Delete article (Admin or owner Creator) |
 | GET | `/api/articles/<id>/comments/` | List comments |
 | POST | `/api/articles/<id>/comments/` | Add comment (authenticated) |
+| GET | `/api/articles/<id>/rating/` | Get rating |
+| POST | `/api/articles/<id>/rating/` | Set rating 1–5 (authenticated) |
 | GET | `/api/comments/<id>/` | One comment |
 | PATCH | `/api/comments/<id>/` | Update comment (owner) |
 | DELETE | `/api/comments/<id>/` | Delete comment (admin or owner) |
+| GET | `/api/chat/` | List last 100 chat messages |
+| POST | `/api/chat/` | Send chat message (authenticated) |
+| POST | `/api/password-reset/` | Request password reset (tracked) |
+| POST | `/api/verify-human/` | Human verification (tracked) |
 
 ## Seeded data
 
@@ -73,9 +85,12 @@ After `python manage.py seed_data`: users `admin1`, `editor1`, `reader1` (passwo
 3. Expand **blog_db** → **Schemas** → **public** → **Tables**.
 4. Your data:
    - **auth_user** – users (admin1, editor1, reader1, plus any you register).
-   - **blog_article** – articles (title, content, author, etc.).
+   - **blog_article** – articles (title, content, author, tags).
    - **blog_comment** – comments (linked to article and user).
    - **blog_tag** – tags (e.g. Technology, News).
+   - **blog_chatmessage** – global chat messages.
+   - **blog_articlerating** – article ratings (1–5).
+   - **blog_systemtrackinglog** – password reset requests & human verification logs.
    - **auth_group** – groups (Admin, Editors, Users).
 
 Right‑click a table → **View/Edit Data** → **All Rows** to see the rows.
@@ -86,6 +101,40 @@ Right‑click a table → **View/Edit Data** → **All Rows** to see the rows.
 2. Backend: `pip install -r requirements.txt`, `python manage.py migrate --noinput`, `python manage.py setup_groups`, `python manage.py collectstatic --noinput`, then start with `gunicorn config.wsgi:application --bind 0.0.0.0:8000` (or `--bind 0.0.0.0:$PORT` on Heroku/Railway/Render).
 3. Frontend: `cd frontend && npm run build`; serve the `dist` folder and proxy `/api` to the Django app.
 
-## Git
+## העלאה ל-GitHub / Push to GitHub
 
-Do not commit `venv/` or `.env`. Submit the Git repository link and include this README.
+1. **וודא שלא נכנסים קבצים רגישים:**  
+   `.gitignore` כבר מונע: `venv/`, `.env`, `node_modules/`, `db.sqlite3`, `staticfiles/`, `frontend/dist/`.
+
+2. **אתחול ריפו (אם עדיין לא):**
+   ```bash
+   cd c:\Users\ASUS\OneDrive\projectsInMiniLaptop\final-django-project
+   git init
+   ```
+
+3. **הוספת קבצים וע commit:**
+   ```bash
+   git add .
+   git status   # בדוק שאין .env או venv
+   git commit -m "Gil's Blog: Django + React, chat, about, file tracking, light/dark"
+   ```
+
+4. **חיבור ל-GitHub והעלאה:**
+   - צור **repository חדש** ב-GitHub (בלי README, בלי .gitignore).
+   - אחר כך:
+   ```bash
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+   git branch -M main
+   git push -u origin main
+   ```
+   (החלף `YOUR_USERNAME` ו-`YOUR_REPO_NAME` בשם המשתמש ובשם הריפו שלך.)
+
+5. **אם הריפו כבר קיים ומחובר:**  
+   ```bash
+   git add .
+   git status
+   git commit -m "Update: chat lounge, about, file tracking, README"
+   git push
+   ```
+
+**חשוב:** אל תעלה את הקובץ `.env` (יש בו סיסמאות). השתמש ב-`.env.example` כתבנית.

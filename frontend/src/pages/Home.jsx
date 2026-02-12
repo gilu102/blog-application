@@ -22,7 +22,11 @@ export default function Home() {
 
   return (
     <div className="container">
-      <h1>Latest Articles</h1>
+      <header className="hero">
+        <h1 className="hero-title">Gil's Blog</h1>
+        <p className="hero-tagline">Thoughts, articles, and updates</p>
+      </header>
+      <h2 className="section-title">Latest Articles</h2>
       <p>3 most recent articles.</p>
       <Link to="/articles">View all articles & search</Link>
       <ul className="article-list">

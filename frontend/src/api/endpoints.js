@@ -9,6 +9,15 @@ export const auth = {
 export const articles = {
   list: (params) => client.get("/articles/", { params }),
   get: (id) => client.get(`/articles/${id}/`),
+  create: (data) => client.post("/articles/", data),
+  update: (id, data) => client.patch(`/articles/${id}/`, data),
+  delete: (id) => client.delete(`/articles/${id}/`),
+};
+
+export const me = () => client.get("/me/");
+
+export const tags = {
+  list: () => client.get("/tags/"),
 };
 
 export const comments = {
@@ -26,4 +35,9 @@ export const ratings = {
 export const chat = {
   list: () => client.get("/chat/"),
   send: (content) => client.post("/chat/", { content }),
+};
+
+export const tracking = {
+  passwordResetRequest: (email) => client.post("/password-reset/", { email }),
+  verifyHuman: () => client.post("/verify-human/"),
 };

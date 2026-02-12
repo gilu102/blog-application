@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { articles } from "../api/endpoints";
+import { useAuth } from "../context/AuthContext";
 
 export default function AllArticles() {
+  const { canEditArticle } = useAuth();
   const [searchParams] = useSearchParams();
   const searchFromUrl = searchParams.get("search") || "";
   const [list, setList] = useState([]);
@@ -40,6 +42,13 @@ export default function AllArticles() {
     setPage(1);
   };
 
+  const handleDelete = (e, articleId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm("Delete this article?")) return;
+    articles.delete(articleId).then(() => setList((prev) => prev.filter((a) => a.id !== articleId))).catch((err) => setError(err.response?.data?.detail || err.message));
+  };
+
   return (
     <div className="container">
       <h1>All Articles</h1>
@@ -53,11 +62,17 @@ export default function AllArticles() {
         <ul className="article-list">
           {list.map((a) => (
             <li key={a.id} className="article-card">
-              <Link to={`/articles/${a.id}`}>
+              <Link to={`/articles/${a.id}`} className="article-card-link">
                 <h2>{a.title}</h2>
                 <p className="meta">{a.author_name} · {new Date(a.publication_date).toLocaleDateString()}</p>
                 <p>{a.content?.slice(0, 150)}...</p>
               </Link>
+              {canEditArticle(a) && (
+                <div className="article-card-actions" onClick={(e) => e.preventDefault()}>
+                  <Link to={`/articles/${a.id}/edit`} className="btn-primary btn-sm">Edit</Link>
+                  <button type="button" className="btn-secondary btn-sm" onClick={(e) => handleDelete(e, a.id)}>Delete</button>
+                </div>
+              )}
             </li>
           ))}
         </ul>

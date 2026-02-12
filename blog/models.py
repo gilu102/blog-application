@@ -60,3 +60,21 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.user.username}: {self.content[:30]}"
+
+
+class SystemTrackingLog(models.Model):
+    """File system / security tracking: password reset requests and human verification."""
+    LOG_TYPE_PASSWORD_RESET = "password_reset"
+    LOG_TYPE_HUMAN_VERIFY = "human_verify"
+
+    log_type = models.CharField(max_length=32)  # password_reset | human_verify
+    email = models.EmailField(blank=True, null=True)  # for password reset
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.log_type} @ {self.created_at}"

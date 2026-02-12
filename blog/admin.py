@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tag, Article, Comment, ArticleRating, ChatMessage
+from .models import Tag, Article, Comment, ArticleRating, ChatMessage, SystemTrackingLog
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
@@ -23,3 +23,10 @@ class ArticleRatingAdmin(admin.ModelAdmin):
 @admin.register(ChatMessage)
 class ChatMessageAdmin(admin.ModelAdmin):
     list_display = ["user", "content", "created_at"]
+
+
+@admin.register(SystemTrackingLog)
+class SystemTrackingLogAdmin(admin.ModelAdmin):
+    list_display = ["log_type", "email", "ip_address", "created_at"]
+    list_filter = ["log_type"]
+    search_fields = ["email", "ip_address"]

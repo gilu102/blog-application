@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { articles as articlesApi, comments as commentsApi, ratings as ratingsApi } from "../api/endpoints";
 import { useAuth } from "../context/AuthContext";
 
 export default function ArticleDetail() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, canEditArticle } = useAuth();
   const [article, setArticle] = useState(null);
   const [comments, setComments] = useState([]);
   const [rating, setRating] = useState({ average: 0, count: 0, user_rating: null });
@@ -52,6 +53,12 @@ export default function ArticleDetail() {
   };
 
   const canModify = (c) => user && c.user_name === user.username;
+  const canEdit = article && canEditArticle(article);
+
+  const handleDeleteArticle = () => {
+    if (!window.confirm("Delete this article?")) return;
+    articlesApi.delete(id).then(() => navigate("/articles")).catch((e) => setError(e.response?.data?.detail || e.message));
+  };
 
   const handleRate = (score) => {
     if (!user) return;
@@ -65,7 +72,15 @@ export default function ArticleDetail() {
   return (
     <div className="container">
       <article className="article-with-comments">
-        <h1>{article.title}</h1>
+        <div className="article-header-row">
+          <h1>{article.title}</h1>
+          {canEdit && (
+            <div className="article-actions">
+              <Link to={`/articles/${id}/edit`} className="btn-primary btn-sm">Edit</Link>
+              <button type="button" className="btn-secondary btn-sm" onClick={handleDeleteArticle}>Delete</button>
+            </div>
+          )}
+        </div>
         <p className="meta">{article.author_name} · {new Date(article.publication_date).toLocaleDateString()}</p>
         {article.tags?.length > 0 && <p>{article.tags.map((t) => t.name).join(", ")}</p>}
         <div className="rating-stars">
