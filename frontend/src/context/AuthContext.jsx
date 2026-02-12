@@ -42,7 +42,7 @@ export function AuthProvider({ children }) {
 
   const isAdmin = user?.groups?.includes("Admin") || user?.is_staff;
   const isCreator = user?.groups?.includes("Editors") || isAdmin;
-  const canEditArticle = (article) => isAdmin || (isCreator && article?.author_username === user?.username);
+  const canEditArticle = (article) => isAdmin || article?.author_username === user?.username;
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout, register, isAdmin, isCreator, canEditArticle }}>

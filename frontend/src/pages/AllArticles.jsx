@@ -4,7 +4,7 @@ import { articles } from "../api/endpoints";
 import { useAuth } from "../context/AuthContext";
 
 export default function AllArticles() {
-  const { canEditArticle, isCreator } = useAuth();
+  const { canEditArticle, user } = useAuth();
   const [searchParams] = useSearchParams();
   const searchFromUrl = searchParams.get("search") || "";
   const [list, setList] = useState([]);
@@ -53,7 +53,7 @@ export default function AllArticles() {
     <div className="container">
       <div className="article-header-row">
         <h1>All Articles</h1>
-        {isCreator && (
+        {user && (
           <Link to="/articles/new" className="btn-primary">Create article</Link>
         )}
       </div>

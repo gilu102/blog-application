@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 export default function ArticleForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, isCreator, canEditArticle } = useAuth();
+  const { user, canEditArticle } = useAuth();
   const isEdit = Boolean(id);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -43,7 +43,7 @@ export default function ArticleForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isEdit && !isCreator) return;
+    if (!isEdit && !user) return;
     setError(null);
     setSubmitting(true);
     const payload = { title, content, author_name, tag_ids: tagIds };
@@ -64,7 +64,7 @@ export default function ArticleForm() {
 
   if (loading) return <div className="container">Loading...</div>;
   if (!user) return <div className="container">Please log in.</div>;
-  if (!isEdit && !isCreator) return <div className="container">You do not have permission to create articles.</div>;
+  if (!isEdit && !user) return <div className="container">Please log in to create articles.</div>;
   if (isEdit && !article) return <div className="container">{error || "Article not found."}</div>;
   if (isEdit && article && !canEditArticle(article)) {
     return <div className="container">You do not have permission to edit this article.</div>;

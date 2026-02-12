@@ -9,14 +9,18 @@ def is_creator(user):
 def can_manage_article(user, article):
     if is_admin(user):
         return True
-    return is_creator(user) and article.author_id == user.id
+    return article.author_id == user.id  # authors can edit/delete their own
 
 class IsAdminOrCreatorOrReadOnly(permissions.BasePermission):
-    """Articles: read all; create if Admin or Creator; update/delete if Admin or Creator-owner."""
+    """Articles: read all; create if authenticated; update/delete if admin or article author."""
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return is_admin(request.user) or is_creator(request.user)
+        if not request.user.is_authenticated:
+            return False
+        if view.action == "create":
+            return True  # any logged-in user can create
+        return True  # update/delete checked in has_object_permission
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:

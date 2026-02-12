@@ -71,8 +71,8 @@ export default function NavBar() {
           <Link to="/" aria-label="Home page" onClick={closeMobile}>Home</Link>
           <Link to="/about" aria-label="About me" onClick={closeMobile}>About</Link>
           <Link to="/articles" onClick={closeMobile}>Articles</Link>
-          {user?.groups?.includes("Admin") || user?.groups?.includes("Editors") ? (
-            <Link to="/articles/new" onClick={closeMobile}>New article</Link>
+          {user ? (
+            <Link to="/articles/new" onClick={closeMobile}>Publish</Link>
           ) : null}
           <Link to="/chat" onClick={closeMobile}>Chat</Link>
           <Link to="/files" onClick={closeMobile}>Files</Link>
@@ -97,8 +97,8 @@ export default function NavBar() {
           <Link to="/" onClick={closeMobile}>Home</Link>
           <Link to="/about" onClick={closeMobile}>About</Link>
           <Link to="/articles" onClick={closeMobile}>Articles</Link>
-          {user?.groups?.includes("Admin") || user?.groups?.includes("Editors") ? (
-            <Link to="/articles/new" onClick={closeMobile}>New article</Link>
+          {user ? (
+            <Link to="/articles/new" onClick={closeMobile}>Publish</Link>
           ) : null}
           <Link to="/chat" onClick={closeMobile}>Chat</Link>
           <Link to="/files" onClick={closeMobile}>Files</Link>
