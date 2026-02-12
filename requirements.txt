@@ -8,3 +8,4 @@ python-decouple>=3.8
 gunicorn>=21.0
 pytest>=7.4
 pytest-django>=4.5
+whitenoise>=6.0
