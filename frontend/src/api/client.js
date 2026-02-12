@@ -1,7 +1,12 @@
 import axios from "axios";
 
+// Set VITE_API_URL in build for separate backend URL; else uses same-origin /api.
+const baseURL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, "")}/api`
+  : "/api";
+
 const client = axios.create({
-  baseURL: "/api",
+  baseURL,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -20,7 +25,7 @@ client.interceptors.response.use(
       const refresh = localStorage.getItem("refresh");
       if (refresh) {
         try {
-          const { data } = await axios.post("/api/token/refresh/", { refresh });
+          const { data } = await axios.post(`${baseURL}/token/refresh/`, { refresh });
           localStorage.setItem("access", data.access);
           original.headers.Authorization = `Bearer ${data.access}`;
           return client(original);

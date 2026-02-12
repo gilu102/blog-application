@@ -46,9 +46,9 @@ export default function FileSystemTracking() {
       <section className="tracking-section">
         <h2>איפוס סיסמה / Password Reset</h2>
         <p className="meta">
-          הזן את כתובת האימייל שלך. אם החשבון קיים, תקבל הוראות לאיפוס (כשהשירות מופעל).
+          הזן את כתובת האימייל שלך. אם החשבון קיים, תקבל אימייל עם קישור לאיפוס סיסמה (בפיתוח האימייל מופיע בקונסול).
           <br />
-          Enter your email. If the account exists, you will receive reset instructions (when the service is enabled).
+          Enter your email. If the account exists, you will receive an email with a reset link (in dev the email is printed in the backend console).
         </p>
         <form onSubmit={handlePasswordReset} className="tracking-form">
           <label>
@@ -77,19 +77,23 @@ export default function FileSystemTracking() {
           Confirm you are not a robot. The action is logged in the tracking system.
         </p>
         <form onSubmit={handleVerifyHuman} className="tracking-form">
-          <label className="checkbox-label">
+          <label className="checkbox-label" htmlFor="human-verify-checkbox">
             <input
+              id="human-verify-checkbox"
               type="checkbox"
               checked={robotChecked}
               onChange={(e) => setRobotChecked(e.target.checked)}
+              aria-describedby="verify-result"
             />
             אני לא רובוט / I'm not a robot
           </label>
           <button type="submit" className="btn-primary" disabled={!robotChecked}>
             אשר / Verify
           </button>
-          {verifySent && <p className="success">אימות נרשם. / Verification recorded.</p>}
-          {verifyError && <p className="error">{verifyError}</p>}
+          <div id="verify-result">
+            {verifySent && <p className="success">אימות נרשם. / Verification recorded.</p>}
+            {verifyError && <p className="error">{verifyError}</p>}
+          </div>
         </form>
       </section>
     </div>

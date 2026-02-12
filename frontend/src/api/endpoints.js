@@ -39,5 +39,13 @@ export const chat = {
 
 export const tracking = {
   passwordResetRequest: (email) => client.post("/password-reset/", { email }),
-  verifyHuman: () => client.post("/verify-human/"),
+  passwordResetConfirm: (uid, token, new_password) =>
+    client.post("/password-reset/confirm/", { uid, token, new_password }),
+  verifyHuman: () => client.post("/verify-human/", {}),
+};
+
+export const uploadedFiles = {
+  list: () => client.get("/files/"),
+  upload: (formData) => client.post("/files/", formData),
+  delete: (id) => client.delete(`/files/${id}/`),
 };

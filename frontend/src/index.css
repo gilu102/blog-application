@@ -35,6 +35,8 @@
 
 * { box-sizing: border-box; }
 body { font-family: system-ui, sans-serif; margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; color: var(--link-hover); }
 .container { max-width: 720px; margin: 0 auto; padding: 0 1rem; }
@@ -46,7 +48,7 @@ input, textarea { width: 100%; padding: 0.5rem; margin: 0.25rem 0; border: 1px s
 label { display: block; margin-top: 0.5rem; }
 .error { color: var(--error); }
 .article-list { list-style: none; padding: 0; }
-.article-card { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border-light); border-radius: 8px; background: var(--card-bg); }
+.article-card { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border-light); border-radius: 8px; background: var(--card-bg); display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.5rem; }
 .article-card h2 { margin: 0 0 0.5rem 0; font-size: 1.25rem; }
 .meta { color: var(--text-muted); font-size: 0.875rem; margin: 0.25rem 0; }
 /* --- Navbar: single line on desktop, full-width bar --- */
@@ -61,7 +63,85 @@ label { display: block; margin-top: 0.5rem; }
 .navbar-links a, .navbar-links button { background: none; border: none; cursor: pointer; font-size: 0.95rem; color: var(--link); padding: 0.25rem 0; }
 .navbar-links a:hover, .navbar-links button:hover { color: var(--link-hover); }
 .navbar-theme-toggle { font-size: 1.2rem; padding: 0.2rem 0.35rem; line-height: 1; }
-@media (max-width: 900px) { .navbar-container { flex-wrap: wrap; } .navbar-search { max-width: none; order: 3; width: 100%; } }
+/* Hamburger: hidden on desktop */
+.navbar-hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 40px; height: 40px; padding: 8px; background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; margin-left: auto; }
+.navbar-hamburger-bar { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 1px; }
+.navbar-mobile-menu { display: none; }
+@media (max-width: 900px) {
+  .navbar-container { flex-wrap: wrap; }
+  .navbar-search-desktop { display: none; }
+  .navbar-hamburger { display: flex; }
+  .navbar-links { display: none; }
+  .navbar-mobile-menu {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .navbar-mobile-open .navbar-mobile-menu {
+    pointer-events: auto;
+    opacity: 1;
+  }
+  .navbar-mobile-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+  }
+  .navbar-mobile-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--bg-muted);
+    border-bottom: 1px solid var(--border);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .navbar-mobile-menu .navbar-search-mobile,
+  .navbar-mobile-menu .navbar-mobile-links {
+    position: relative;
+  }
+  .navbar-mobile-menu .navbar-search-mobile {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .navbar-mobile-menu .navbar-search-mobile .search-input { flex: 1; margin: 0; }
+  .navbar-mobile-menu .navbar-mobile-links {
+    padding: 1rem 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .navbar-mobile-menu .navbar-mobile-links a,
+  .navbar-mobile-menu .navbar-mobile-links button {
+    display: block;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--link);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .navbar-mobile-menu .navbar-mobile-links a:hover,
+  .navbar-mobile-menu .navbar-mobile-links button:hover { color: var(--link-hover); }
+  .navbar-mobile-menu .navbar-theme-toggle { text-align: left; }
+}
+@media (min-width: 901px) {
+  .navbar-search-mobile { display: none !important; }
+}
 .rating-stars { margin: 0.5rem 0; }
 .rating-stars button { background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0 2px; }
 .rating-stars .filled { color: var(--star-filled); }
@@ -116,7 +196,6 @@ label { display: block; margin-top: 0.5rem; }
 .article-header-row h1 { margin: 0; flex: 1; }
 .article-actions { display: flex; gap: 0.5rem; }
 .article-card-link { flex: 1; display: block; }
-.article-card { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.5rem; }
 .article-card-actions { display: flex; gap: 0.5rem; }
 .article-form label { margin-top: 0.75rem; }
 .article-form input, .article-form textarea { display: block; margin-top: 0.25rem; }
@@ -140,6 +219,15 @@ label { display: block; margin-top: 0.5rem; }
 
 .files-placeholder { padding: 1.5rem 0; color: var(--text-muted); }
 .files-placeholder p { margin: 0.5rem 0; }
+.files-upload-form { margin: 1rem 0; padding: 1rem; background: var(--bg-muted); border-radius: 8px; border: 1px solid var(--border-light); }
+.files-upload-form h2 { margin: 0 0 0.75rem; font-size: 1.1rem; }
+.files-upload-form label { margin-top: 0.5rem; }
+.files-upload-form input[type="file"] { padding: 0.25rem 0; }
+.files-list { list-style: none; padding: 0; }
+.files-item { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light); }
+.files-item a { flex: 1; min-width: 0; }
+.reset-password-form label { margin-top: 0.5rem; }
+.reset-password-form .btn-primary { margin-top: 0.75rem; }
 
 .chatbot-toggle { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 56px; height: 56px; border-radius: 50%; background: var(--link); color: #fff; border: none; font-size: 1.5rem; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.2); z-index: 1000; }
 .chatbot-toggle:hover { background: var(--link-hover); }

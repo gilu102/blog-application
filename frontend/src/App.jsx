@@ -12,6 +12,7 @@ import Chat from "./pages/Chat";
 import Files from "./pages/Files";
 import About from "./pages/About";
 import FileSystemTracking from "./pages/FileSystemTracking";
+import ResetPassword from "./pages/ResetPassword";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/files" element={<Files />} />
           <Route path="/about" element={<About />} />
           <Route path="/file-system-tracking" element={<FileSystemTracking />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>

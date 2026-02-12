@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
-from .models import Article, Comment, Tag, ArticleRating, ChatMessage
+from .models import Article, Comment, Tag, ArticleRating, ChatMessage, UploadedFile
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
@@ -83,3 +83,17 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         model = ChatMessage
         fields = ["id", "user", "user_name", "content", "created_at"]
         read_only_fields = ["user", "created_at"]
+
+
+class UploadedFileSerializer(serializers.ModelSerializer):
+    uploaded_by_username = serializers.CharField(source="uploaded_by.username", read_only=True)
+
+    class Meta:
+        model = UploadedFile
+        fields = ["id", "file", "name", "uploaded_at", "uploaded_by", "uploaded_by_username"]
+        read_only_fields = ["uploaded_at", "uploaded_by"]
+
+    def create(self, validated_data):
+        if not validated_data.get("name"):
+            validated_data["name"] = validated_data.get("file").name or "file"
+        return super().create(validated_data)

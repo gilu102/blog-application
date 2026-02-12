@@ -109,8 +109,9 @@ export default function Chat() {
               placeholder="כתוב הודעה... Type a message..."
               maxLength={500}
               className="chat-input"
+              aria-label="Chat message"
             />
-            <button type="submit" className="chat-send" title="Send">
+            <button type="submit" className="chat-send" title="Send" aria-label="Send message">
               ➤
             </button>
           </div>

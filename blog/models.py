@@ -78,3 +78,17 @@ class SystemTrackingLog(models.Model):
 
     def __str__(self):
         return f"{self.log_type} @ {self.created_at}"
+
+
+class UploadedFile(models.Model):
+    """Files uploaded for the Files page (shared resources)."""
+    file = models.FileField(upload_to="uploads/%Y/%m/")
+    name = models.CharField(max_length=255, blank=True)  # display name
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="uploaded_files")
+
+    class Meta:
+        ordering = ["-uploaded_at"]
+
+    def __str__(self):
+        return self.name or self.file.name

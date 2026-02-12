@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tag, Article, Comment, ArticleRating, ChatMessage, SystemTrackingLog
+from .models import Tag, Article, Comment, ArticleRating, ChatMessage, SystemTrackingLog, UploadedFile
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
@@ -30,3 +30,8 @@ class SystemTrackingLogAdmin(admin.ModelAdmin):
     list_display = ["log_type", "email", "ip_address", "created_at"]
     list_filter = ["log_type"]
     search_fields = ["email", "ip_address"]
+
+
+@admin.register(UploadedFile)
+class UploadedFileAdmin(admin.ModelAdmin):
+    list_display = ["name", "file", "uploaded_by", "uploaded_at"]

@@ -2,7 +2,7 @@
 
 בלוג עם **Django REST API** ופרונט **React** — מאמרים, תגובות, צ'אט, אודות, איפוס סיסמה ואימות משתמשים.
 
-**Features:** Articles & tags, comments, ratings, global chat (Gil's Lounge), light/dark mode, About Me + CV download, File System Tracking (password reset + human verification), role-based CRUD (Admin / Creator / User).
+**Features:** Articles & tags, comments, ratings, global chat (Gil's Lounge), light/dark mode, About Me + CV download, File System Tracking (password reset **with email** + human verification), **file upload** (Files page), role-based CRUD (Admin / Creator / User), **API tests** (pytest), **accessibility** (aria-labels, focus-visible).
 
 ## Tech stack
 
@@ -20,7 +20,7 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-Create a `.env` file (see `.env.example`): `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, database (PostgreSQL: `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`) or `USE_SQLITE=True`, and `CORS_ORIGINS`.
+Create a `.env` file (see `.env.example`): `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, database (PostgreSQL: `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`) or `USE_SQLITE=True`, `CORS_ORIGINS`, and optionally `FRONTEND_RESET_URL` (for password-reset email link; default `http://localhost:3000/reset-password`).
 
 **Using PostgreSQL:**  
 1. Install [PostgreSQL for Windows](https://www.postgresql.org/download/windows/) and note the password you set for the `postgres` user.  
@@ -71,8 +71,19 @@ Frontend: `http://localhost:3000` (proxies `/api` to backend). Start the backend
 | DELETE | `/api/comments/<id>/` | Delete comment (admin or owner) |
 | GET | `/api/chat/` | List last 100 chat messages |
 | POST | `/api/chat/` | Send chat message (authenticated) |
-| POST | `/api/password-reset/` | Request password reset (tracked) |
+| POST | `/api/password-reset/` | Request password reset (sends email with link; tracked) |
+| POST | `/api/password-reset/confirm/` | Set new password (body: `uid`, `token`, `new_password`) |
 | POST | `/api/verify-human/` | Human verification (tracked) |
+| GET | `/api/files/` | List uploaded files |
+| POST | `/api/files/` | Upload file (multipart; authenticated) |
+| DELETE | `/api/files/<id>/` | Delete file (admin or owner) |
+
+## Tests
+
+```bash
+pip install -r requirements.txt   # includes pytest, pytest-django
+pytest
+```
 
 ## Seeded data
 
@@ -91,15 +102,19 @@ After `python manage.py seed_data`: users `admin1`, `editor1`, `reader1` (passwo
    - **blog_chatmessage** – global chat messages.
    - **blog_articlerating** – article ratings (1–5).
    - **blog_systemtrackinglog** – password reset requests & human verification logs.
+   - **blog_uploadedfile** – uploaded files (Files page).
    - **auth_group** – groups (Admin, Editors, Users).
 
 Right‑click a table → **View/Edit Data** → **All Rows** to see the rows.
 
 ## Deploy (production)
 
+**תדריך מפורט בעברית:** ראה **[DEPLOY.md](DEPLOY.md)** – Render, VPS עם Nginx, משתני סביבה והגדרת HTTPS.
+
+בקצרה:
 1. On the server: set env vars — `SECRET_KEY` (long random), `DEBUG=False`, `ALLOWED_HOSTS=yourdomain.com`, `CORS_ORIGINS=https://yourdomain.com`, and PostgreSQL `DB_*` (no SQLite in production).
-2. Backend: `pip install -r requirements.txt`, `python manage.py migrate --noinput`, `python manage.py setup_groups`, `python manage.py collectstatic --noinput`, then start with `gunicorn config.wsgi:application --bind 0.0.0.0:8000` (or `--bind 0.0.0.0:$PORT` on Heroku/Railway/Render).
-3. Frontend: `cd frontend && npm run build`; serve the `dist` folder and proxy `/api` to the Django app.
+2. Backend: `pip install -r requirements.txt`, `python manage.py migrate --noinput`, `python manage.py setup_groups`, `python manage.py collectstatic --noinput`, then start with `gunicorn config.wsgi:application --bind 0.0.0.0:8000` (or `--bind 0.0.0.0:$PORT` on Render/Railway).
+3. Frontend: `cd frontend && npm run build`; serve the `dist` folder and proxy `/api` to the Django app. If frontend and backend are on different URLs, set `VITE_API_URL` to the backend URL when building the frontend.
 
 ## העלאה ל-GitHub / Push to GitHub
 
