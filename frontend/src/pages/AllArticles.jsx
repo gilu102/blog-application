@@ -4,7 +4,7 @@ import { articles } from "../api/endpoints";
 import { useAuth } from "../context/AuthContext";
 
 export default function AllArticles() {
-  const { canEditArticle } = useAuth();
+  const { canEditArticle, isCreator } = useAuth();
   const [searchParams] = useSearchParams();
   const searchFromUrl = searchParams.get("search") || "";
   const [list, setList] = useState([]);
@@ -51,7 +51,12 @@ export default function AllArticles() {
 
   return (
     <div className="container">
-      <h1>All Articles</h1>
+      <div className="article-header-row">
+        <h1>All Articles</h1>
+        {isCreator && (
+          <Link to="/articles/new" className="btn-primary">Create article</Link>
+        )}
+      </div>
       <form className="search-form" onSubmit={handleSearch}>
         <input type="text" placeholder="Search by title, content, tags, author..." value={search} onChange={(e) => setSearch(e.target.value)} />
         <button type="submit" className="btn-primary">Search</button>

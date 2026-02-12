@@ -20,25 +20,27 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <NavBar />
-      <main style={{ padding: "1rem 0" }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/articles" element={<AllArticles />} />
-          <Route path="/articles/new" element={<ArticleForm />} />
-          <Route path="/articles/:id" element={<ArticleDetail />} />
-          <Route path="/articles/:id/edit" element={<ArticleForm />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/files" element={<Files />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/file-system-tracking" element={<FileSystemTracking />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </main>
-      <Footer />
-      <ChatbotWidget />
+        <div className="app-layout">
+          <NavBar />
+          <main style={{ padding: "1rem 0" }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/articles" element={<AllArticles />} />
+              <Route path="/articles/new" element={<ArticleForm />} />
+              <Route path="/articles/:id" element={<ArticleDetail />} />
+              <Route path="/articles/:id/edit" element={<ArticleForm />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/files" element={<Files />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/file-system-tracking" element={<FileSystemTracking />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+        <ChatbotWidget />
       </AuthProvider>
     </ThemeProvider>
   );
