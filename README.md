@@ -87,7 +87,7 @@ pytest
 
 ## Seeded data
 
-After `python manage.py seed_data`: users `admin1`, `editor1`, `reader1` (password `password123`), 2 articles, 2 comments per article.
+After `python manage.py seed_data`: default 50 users, 50 articles, 50 chat messages, comments, ratings, tags and files. Optional: `--clear` to clear before seeding, `--count N` (default 50). Example: `python manage.py seed_data --clear --count 50`.
 
 ## Where your data is in PostgreSQL
 
@@ -106,15 +106,6 @@ After `python manage.py seed_data`: users `admin1`, `editor1`, `reader1` (passwo
    - **auth_group** – groups (Admin, Editors, Users).
 
 Right‑click a table → **View/Edit Data** → **All Rows** to see the rows.
-
-## Deploy (production)
-
-**תדריך מפורט בעברית:** ראה **[DEPLOY.md](DEPLOY.md)** – Render, VPS עם Nginx, משתני סביבה והגדרת HTTPS.
-
-בקצרה:
-1. On the server: set env vars — `SECRET_KEY` (long random), `DEBUG=False`, `ALLOWED_HOSTS=yourdomain.com`, `CORS_ORIGINS=https://yourdomain.com`, and PostgreSQL `DB_*` (no SQLite in production).
-2. Backend: `pip install -r requirements.txt`, `python manage.py migrate --noinput`, `python manage.py setup_groups`, `python manage.py collectstatic --noinput`, then start with `gunicorn config.wsgi:application --bind 0.0.0.0:8000` (or `--bind 0.0.0.0:$PORT` on Render/Railway).
-3. Frontend: `cd frontend && npm run build`; serve the `dist` folder and proxy `/api` to the Django app. If frontend and backend are on different URLs, set `VITE_API_URL` to the backend URL when building the frontend.
 
 ## העלאה ל-GitHub / Push to GitHub
 
